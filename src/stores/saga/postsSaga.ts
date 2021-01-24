@@ -22,8 +22,10 @@ function* fetchPostList() {
 
 function* createPostItem({ postItem }: types.CreatePostItemI) {
 	try {
-		yield put(postsAction.createPostItemSucceeded(postItem));
-		yield call<any>(postServices.createPostItem, { postItem });
+		const {
+			data: { newPost },
+		} = yield call<any>(postServices.createPostItem, { postItem });
+		yield put(postsAction.createPostItemSucceeded(newPost));
 	} catch (error) {
 		console.log(error);
 	}
@@ -31,8 +33,10 @@ function* createPostItem({ postItem }: types.CreatePostItemI) {
 
 function* editPostItem({ postId, postEdit }: types.EditPostItemI) {
 	try {
-		yield put(postsAction.editPostItemSucceeded(postId, postEdit));
-		yield call<any>(postServices.editPostItem, { postId, postEdit });
+		const {
+			data: { updatedPost },
+		} = yield call<any>(postServices.editPostItem, { postId, postEdit });
+		yield put(postsAction.editPostItemSucceeded(postId, updatedPost));
 	} catch (error) {
 		console.log(error);
 	}
