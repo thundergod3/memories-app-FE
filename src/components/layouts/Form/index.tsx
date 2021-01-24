@@ -7,14 +7,14 @@ import { PostItemI } from "../../../stores/redux/reducers/postsReducer";
 import { RootState } from "../../../stores/rootReducer";
 
 import { TextField, Button, Typography, Paper } from "@material-ui/core";
-import useStyles, { StylesI } from "./style";
+import useStyles from "./style";
 
 const Form = (): JSX.Element => {
 	const {
 		postsReducer: { postDetail },
+		authsReducer: { userData, checkAuthentication },
 	} = useSelector((state: RootState) => state);
 	const [postData, setPostData] = useState<PostItemI>({
-		creator: "",
 		title: "",
 		message: "",
 		tags: "",
@@ -22,7 +22,7 @@ const Form = (): JSX.Element => {
 	});
 	const { createPostItemRequest, editPostItemRequest } = postsAction;
 	const dispatch = useDispatch();
-	const classes: StylesI = useStyles();
+	const classes = useStyles();
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
 		e.preventDefault();
@@ -32,6 +32,7 @@ const Form = (): JSX.Element => {
 				editPostItemRequest(postDetail._id, {
 					...postData,
 					tags: (postData.tags as string).split(",").map((item: any): string => item.trim()),
+					name: userData.name,
 				})
 			);
 		} else {
@@ -39,6 +40,7 @@ const Form = (): JSX.Element => {
 				createPostItemRequest({
 					...postData,
 					tags: (postData.tags as string).split(",").map((item: any): string => item.trim()),
+					name: userData.name,
 				})
 			);
 		}
@@ -48,7 +50,6 @@ const Form = (): JSX.Element => {
 
 	const handleClear = (): void => {
 		setPostData({
-			creator: "",
 			title: "",
 			message: "",
 			tags: "",
@@ -64,74 +65,76 @@ const Form = (): JSX.Element => {
 
 	return (
 		<Paper className={classes.paper}>
-			<form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
-				<Typography variant="h6">Create a Memory</Typography>
-				<TextField
-					name="creator"
-					variant="outlined"
-					label="Creator"
-					fullWidth
-					value={postData.creator}
-					onChange={(e: ChangeEvent<HTMLInputElement>) =>
-						setPostData({ ...postData, [e.target.name]: e.target.value })
-					}
-				/>
-				<TextField
-					name="title"
-					variant="outlined"
-					label="Title"
-					fullWidth
-					value={postData.title}
-					onChange={(e: ChangeEvent<HTMLInputElement>) =>
-						setPostData({ ...postData, [e.target.name]: e.target.value })
-					}
-				/>
-				<TextField
-					name="message"
-					variant="outlined"
-					label="Message"
-					fullWidth
-					value={postData.message}
-					onChange={(e: ChangeEvent<HTMLInputElement>) =>
-						setPostData({ ...postData, [e.target.name]: e.target.value })
-					}
-				/>
-				<TextField
-					name="tags"
-					variant="outlined"
-					label="Tags"
-					fullWidth
-					value={postData.tags}
-					onChange={(e: ChangeEvent<HTMLInputElement>) =>
-						setPostData({ ...postData, [e.target.name]: e.target.value })
-					}
-				/>
-				<div className={classes.fileInput}>
-					<FileBase
-						type="file"
-						multiple={false}
-						onDone={({ base64 }) => setPostData({ ...postData, selectedFile: base64 })}
+			{checkAuthentication === false ? (
+				<Typography variant="h6" align="center">
+					Please Sign In to create your own memories and like other's memories
+				</Typography>
+			) : (
+				<form
+					autoComplete="off"
+					noValidate
+					className={`${classes.root} ${classes.form}`}
+					onSubmit={handleSubmit}>
+					<Typography variant="h6">Create a Memory</Typography>
+					<TextField
+						name="title"
+						variant="outlined"
+						label="Title"
+						fullWidth
+						value={postData.title}
+						onChange={(e: ChangeEvent<HTMLInputElement>) =>
+							setPostData({ ...postData, [e.target.name]: e.target.value })
+						}
 					/>
-				</div>
-				<Button
-					className={classes.buttonSubmit}
-					variant="contained"
-					color="primary"
-					size="large"
-					type="submit"
-					fullWidth>
-					Submit
-				</Button>
-				<Button
-					className={classes.buttonSubmit}
-					variant="contained"
-					color="secondary"
-					size="small"
-					onClick={handleClear}
-					fullWidth>
-					Clear
-				</Button>
-			</form>
+					<TextField
+						name="message"
+						variant="outlined"
+						label="Message"
+						fullWidth
+						multiline
+						rows={4}
+						value={postData.message}
+						onChange={(e: ChangeEvent<HTMLInputElement>) =>
+							setPostData({ ...postData, [e.target.name]: e.target.value })
+						}
+					/>
+					<TextField
+						name="tags"
+						variant="outlined"
+						label="Tags"
+						fullWidth
+						value={postData.tags}
+						onChange={(e: ChangeEvent<HTMLInputElement>) =>
+							setPostData({ ...postData, [e.target.name]: e.target.value })
+						}
+					/>
+					<div className={classes.fileInput}>
+						<FileBase
+							type="file"
+							multiple={false}
+							onDone={({ base64 }) => setPostData({ ...postData, selectedFile: base64 })}
+						/>
+					</div>
+					<Button
+						className={classes.buttonSubmit}
+						variant="contained"
+						color="primary"
+						size="large"
+						type="submit"
+						fullWidth>
+						Submit
+					</Button>
+					<Button
+						className={classes.buttonSubmit}
+						variant="contained"
+						color="secondary"
+						size="small"
+						onClick={handleClear}
+						fullWidth>
+						Clear
+					</Button>
+				</form>
+			)}
 		</Paper>
 	);
 };

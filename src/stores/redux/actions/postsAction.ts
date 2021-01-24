@@ -69,10 +69,11 @@ class postsAction {
 			postId,
 		};
 	};
-	likePostItemSucceeded = (postId: string | undefined): types.LikePostItemI => {
+	likePostItemSucceeded = (postId: string | undefined, postLike: PostItemI): types.LikePostItemI => {
 		return {
 			type: types.LIKE_POST_ITEM_SUCCEEDED,
 			postId,
+			postLike,
 		};
 	};
 }

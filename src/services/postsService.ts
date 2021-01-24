@@ -5,7 +5,6 @@ import { PostItemI } from "../stores/redux/reducers/postsReducer";
 interface CreatePostItemI {
 	postItem: PostItemI;
 }
-
 interface EditPostItemI {
 	postId: String;
 	postEdit: PostItemI;

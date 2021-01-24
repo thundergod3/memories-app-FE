@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Router } from "react-router";
+import { BrowserRouter as Router } from "react-router-dom";
 
 import { Provider } from "react-redux";
 import store from "./stores/configureStore";
@@ -11,7 +11,7 @@ import history from "./constants/history";
 
 ReactDOM.render(
 	<Provider store={store}>
-		<Router history={history}>
+		<Router>
 			<App />
 		</Router>
 	</Provider>,

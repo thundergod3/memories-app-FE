@@ -3,13 +3,14 @@ import produce from "immer";
 
 interface PostItemI {
 	_id?: string;
-	creator?: string;
+	name?: string | undefined;
 	title?: string;
 	message?: string;
 	tags?: any;
 	selectedFile?: string;
 	createdAt?: Date;
-	likeCount?: number;
+	likes?: Array<string> | any;
+	creator?: string;
 }
 
 type PostListI = Array<PostItemI>;
@@ -33,7 +34,7 @@ const postsReducer = (state = initalState, action: any) =>
 			}
 
 			case types.CREATE_POST_ITEM_SUCCEEDED: {
-				draft.postList.push(action.postItem);
+				draft.postList = [action.postItem, ...draft.postList];
 				break;
 			}
 
@@ -63,14 +64,8 @@ const postsReducer = (state = initalState, action: any) =>
 
 			case types.LIKE_POST_ITEM_SUCCEEDED: {
 				draft.postList = draft.postList.map(
-					(postItem: PostItemI | any): PostItemI => {
-						if (postItem._id === action.postId) {
-							return {
-								...postItem,
-								likeCount: postItem?.likeCount + 1,
-							};
-						} else return postItem;
-					}
+					(postItem: PostItemI | any): PostItemI =>
+						postItem._id === action.postId ? action.postLike : postItem
 				);
 				break;
 			}

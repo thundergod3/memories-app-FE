@@ -2,10 +2,11 @@ import { AxiosResponse } from "axios";
 import { SagaIterator } from "redux-saga";
 import { takeEvery, takeLatest, call, put } from "redux-saga/effects";
 
-import * as types from "../../constants/types";
-
 import postServices from "../../services/postsService";
+
+import * as types from "../../constants/types";
 import postsAction from "../redux/actions/postsAction";
+import utilsAction from "../redux/actions/utilsAction";
 
 import { PostItemI, PostListI } from "../redux/reducers/postsReducer";
 
@@ -13,6 +14,7 @@ function* fetchPostList() {
 	try {
 		const { data }: AxiosResponse = yield call<any>(postServices.fetchPostList);
 		yield put(postsAction.fetchPostListSucceeded(data));
+		yield put(utilsAction.loadedUI());
 	} catch (error) {
 		console.log(error);
 	}
@@ -47,8 +49,8 @@ function* deletePostItem({ postId }: types.DeletePostItemI) {
 
 function* likePostItem({ postId }: types.LikePostItemI) {
 	try {
-		yield put(postsAction.likePostItemSucceeded(postId));
-		yield call<any>(postServices.likePostItem, { postId });
+		const { data }: AxiosResponse = yield call<any>(postServices.likePostItem, { postId });
+		yield put(postsAction.likePostItemSucceeded(postId, data));
 	} catch (error) {
 		console.log(error);
 	}
