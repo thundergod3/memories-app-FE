@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./stores/rootReducer";
 import postsAction from "./stores/redux/actions/postsAction";
 import authsAction from "./stores/redux/actions/authsAction";
+import utilsAction from "./stores/redux/actions/utilsAction";
 
 import "./App.scss";
 import { Container } from "@material-ui/core";
@@ -20,10 +21,12 @@ const App = (): JSX.Element => {
 		authsReducer: { checkAuthentication },
 	} = useSelector((state: RootState) => state);
 	const { fetchPostListRequest } = postsAction;
+	const { loadingUI } = utilsAction;
 	const { checkAuthenticaionRequest } = authsAction;
 	const dispatch: Dispatch<any> = useDispatch();
 
 	useEffect(() => {
+		dispatch(loadingUI());
 		dispatch(fetchPostListRequest());
 	}, []);
 
