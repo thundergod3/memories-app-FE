@@ -58,9 +58,10 @@ class AuthsAction {
 		};
 	};
 
-	getUserRequest = (): types.GetUserI => {
+	getUserRequest = (token: string): types.GetUserI => {
 		return {
 			type: types.GET_USR_REQUEST,
+			token,
 		};
 	};
 	getUserSucceeded = (userData: UserDataI): types.GetUserI => {

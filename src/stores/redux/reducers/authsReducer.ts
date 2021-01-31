@@ -34,6 +34,7 @@ const authsReducer = (state = initalState, action: any) =>
 			case types.SIGN_UP_SUCCEEDED: {
 				draft.userData = action.userData;
 				draft.token = action.token;
+				draft.checkAuthentication = true;
 				break;
 			}
 

@@ -1,21 +1,21 @@
-import { takeLatest, call, put, select } from "redux-saga/effects";
+import { takeLatest, call, put } from "redux-saga/effects";
 
 import * as types from "../../constants/types";
 import { UserDataI } from "../redux/reducers/authsReducer";
 import authsAction from "../redux/actions/authsAction";
 
-import { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import HTTPMethod from "../../services";
 import authsService from "../../services/authsService";
 
 import cookieLocal from "../../helpers/cookieLocal";
 import decoded from "jwt-decode";
+import utilsAction from "../redux/actions/utilsAction";
 
-function* getUser() {
+function* getUser({ token }: any) {
 	try {
-		const token: string | undefined = yield cookieLocal.getFromLocal("token");
-
 		yield call(HTTPMethod.attachTokenToHeader, { token });
+		// yield (axios.defaults.headers.common["Authorization"] = `Bearer ${token}`);
 		const {
 			data: { userData },
 		}: AxiosResponse = yield call(authsService.getUser);
@@ -45,8 +45,8 @@ function* signIn({ formSignIn }: any) {
 		}: AxiosResponse = yield call(authsService.signin, { formSignIn });
 
 		yield cookieLocal.saveToLocal("token", token);
-		yield call(checkAuthentication);
 		yield put(authsAction.SignInSucceeded(userData, token));
+		yield put(utilsAction.loadedUI());
 	} catch (error) {
 		console.log(error);
 	}
@@ -59,8 +59,8 @@ function* signUp({ formSignUp }: any) {
 		}: AxiosResponse = yield call(authsService.signup, { formSignUp });
 
 		yield cookieLocal.saveToLocal("token", token);
-		yield call(checkAuthentication);
 		yield put(authsAction.signUpSucceeded(userData, token));
+		yield put(utilsAction.loadedUI());
 	} catch (error) {
 		console.log(error);
 	}
@@ -68,12 +68,13 @@ function* signUp({ formSignUp }: any) {
 
 function* logout() {
 	yield cookieLocal.removeFromLocal("token");
+	yield (axios.defaults.headers.common["Authorization"] = null);
 	yield put(authsAction.logoutSucceeded());
 }
 
 function* checkAuthentication() {
-	const statusCode: number = yield call(getUser);
 	const token: string = yield cookieLocal.getFromLocal("token");
+	const statusCode: number = yield call(getUser, { token });
 
 	if (statusCode === 401 || !token) {
 		yield call(logout);

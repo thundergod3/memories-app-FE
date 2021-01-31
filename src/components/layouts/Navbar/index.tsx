@@ -46,7 +46,10 @@ const Navbar = (): JSX.Element => {
 							variant="contained"
 							className={classes.logout}
 							color="secondary"
-							onClick={(): void => dispatch(logoutRequest())}>
+							onClick={(): void => {
+								window.location.href = "/login";
+								dispatch(logoutRequest());
+							}}>
 							Logout
 						</Button>
 					</div>

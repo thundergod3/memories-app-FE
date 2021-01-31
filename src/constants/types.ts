@@ -138,6 +138,7 @@ interface LogOutSucceededI {
 
 interface GetUserRequestI {
 	type: typeof GET_USR_REQUEST;
+	token: string;
 }
 interface GetUserSucceededI {
 	type: typeof GET_USR_SUCCEEDED;
